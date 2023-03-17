@@ -1,0 +1,8 @@
+FROM golang:1.19
+
+MAINTAINER Yogesh Sharma <Yogesh.Sharma@CrunchyData.com>
+
+COPY postgresql-prometheus-adapter start.sh /
+
+ENTRYPOINT ["/start.sh"]
+

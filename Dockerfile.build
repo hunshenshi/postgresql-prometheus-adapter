@@ -1,0 +1,20 @@
+# Build stage
+FROM golang:1.19 AS builder
+COPY ./pkg prometheus-adapter/pkg
+COPY ./main.go prometheus-adapter/
+COPY ./go.mod prometheus-adapter/go.mod
+COPY ./go.sum prometheus-adapter/go.sum
+RUN cd prometheus-adapter \
+    && go mod tidy \
+    && GOWORK=off GOOS=linux CGO_ENABLED=1 go build -a --ldflags '-w' -o /go/postgresql-prometheus-adapter./postgresql-prometheus-adapter
+
+# Final image
+FROM centos:7
+MAINTAINER Yogesh Sharma <Yogesh.Sharma@CrunchyData.com>
+
+COPY --from=builder /go/postgresql-prometheus-adapter /
+
+COPY postgresql-prometheus-adapter start.sh /
+
+ENTRYPOINT ["/start.sh"]
+
